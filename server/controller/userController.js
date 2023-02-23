@@ -1,7 +1,5 @@
-
 const User = require("../models/userModel");
 const generateToken = require("../config/generateTokeb")
-
 
 const register = async (req, res) => {
   const { email } = req.body;
@@ -13,15 +11,13 @@ const register = async (req, res) => {
   }
 
   if (!data) {
-    res.status(400);
-    throw new Error("Please Enter all the Feilds");
+    res.status(400).json({ status: "error", msg: "Please Enter all the Feilds" });
   }
 
   const userExists = await User.findOne({ email });
 
   if (userExists) {
-    res.status(400);
-    throw new Error("User already exists");
+    res.status(400).json({ status: "error", msg: "User already exists" });
   }
 
   const user = await User.create(data);
@@ -36,8 +32,7 @@ const register = async (req, res) => {
       token : generateToken(user._id)
     });
   } else {
-    res.status(400);
-    throw new Error("User not found");
+    res.status(400).json({ status: "error", msg: "User not found" });
   }
 };
 
@@ -56,8 +51,7 @@ const authUser = async (req, res) => {
         token: generateToken(user._id),
       });
     } else {
-      res.status(401);
-      throw new Error("Invalid Email or Password");
+      res.status(400).json({ status: "error", msg: "Invalid Email or Password" });
     }
   };
 

@@ -42,7 +42,6 @@ function Login() {
               });
               history.push("/chats");
         } catch (error) {
-            console.log('error: ', error);
             
         }
     }

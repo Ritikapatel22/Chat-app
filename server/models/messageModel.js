@@ -8,7 +8,7 @@ const messageModal = mongoose.Schema(
         },
         content : {
             type : String,
-            trim : true
+            // trim : true
         },
         chat : {
             type: mongoose.Schema.Types.ObjectId,
@@ -17,5 +17,5 @@ const messageModal = mongoose.Schema(
     }
 );
 
-const Message  = mongoose.model("Chat" , messageModal)
+const Message  = mongoose.model("Message" , messageModal)
 module.exports = Message
