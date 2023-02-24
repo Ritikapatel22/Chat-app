@@ -1,33 +1,41 @@
-const express = require("express")
-const protect = require("../middleware/authMiddleware")
-const {register , authUser ,alluser} = require("../controller/userController")
-const multer = require('multer')
-const path = require('path')
+const express = require("express");
+const protect = require("../middleware/authMiddleware");
+const {
+  register,
+  authUser,
+  alluser,
+  renameUser,
+} = require("../controller/userController");
+const multer = require("multer");
+const path = require("path");
 
 const imageStorage = multer.diskStorage({
-    destination: 'images', 
-      filename: (req, file, cb) => {
-          cb(null, file.fieldname + '_' + Date.now() 
-             + path.extname(file.originalname))
-    }
+  destination: "images",
+  filename: (req, file, cb) => {
+    cb(
+      null,
+      file.fieldname + "_" + Date.now() + path.extname(file.originalname)
+    );
+  },
 });
 const imageUpload = multer({
-    storage: imageStorage,
-    limits: {
-      fileSize: 1000000 // 1000000 Bytes = 1 MB
-    },
-    fileFilter(req, file, cb) {
-      if (!file.originalname.match(/\.(png|jpg)$/)) { 
-         return cb(new Error('Please upload a Image'))
-       }
-     cb(undefined, true)
-  }
-}) 
+  storage: imageStorage,
+  limits: {
+    fileSize: 1000000, // 1000000 Bytes = 1 MB
+  },
+  fileFilter(req, file, cb) {
+    if (!file.originalname.match(/\.(png|jpg)$/)) {
+      return cb(new Error("Please upload a Image"));
+    }
+    cb(undefined, true);
+  },
+});
 
-const router = express.Router()
+const router = express.Router();
 
-router.route('/').post(imageUpload.single("pic"), register)
-router.route('/login').post(authUser)
-router.route('/').get(protect,alluser)
+router.route("/").post(imageUpload.single("pic"), register);
+router.route("/login").post(authUser);
+router.route("/").get(protect, alluser);
+router.route("/update/:id").put(imageUpload.single("pic"), renameUser);
 
-module.exports = router
+module.exports = router;

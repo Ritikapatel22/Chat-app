@@ -18,10 +18,11 @@ import {
   Spinner,
   Text,
   Tooltip,
+  useColorMode,
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import { BellIcon, ChevronDownIcon } from "@chakra-ui/icons";
+import { BellIcon, ChevronDownIcon, MoonIcon, SunIcon } from "@chakra-ui/icons";
 import React, { useState } from "react";
 import { ChatState } from "../../Context/ChatProvider";
 import ProfileModal from "./ProfileModal";
@@ -30,17 +31,25 @@ import axios from "axios";
 import ChatLoading from "../ChatLoading";
 import UserListItem from "../UserAvtar/UserListItem";
 import { getSender } from "../../config/ChatLogic";
-import NotificationBadge, { Effect } from 'react-notification-badge';
+import NotificationBadge, { Effect } from "react-notification-badge";
 
 function SideDrawer() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
   const history = useHistory();
-  const { user  , setSelectedChat , chat , setChat ,notification , setNotification} = ChatState();
+  const {
+    user,
+    setSelectedChat,
+    chat,
+    setChat,
+    notification,
+    setNotification,
+  } = ChatState();
   const [search, setSearch] = useState();
   const [searchResult, setSearchResult] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadingChat, setLoadingChat] = useState(false);
+  const { colorMode, toggleColorMode } = useColorMode();
 
   const logoutHabdler = () => {
     localStorage.removeItem("userInfo");
@@ -78,37 +87,37 @@ function SideDrawer() {
     }
   };
 
-  const accessChat = async(userId) => {
-      try {
-          setLoadingChat(true)
-          const config = {
-            headers: {
-            "Content-type" : "application/json",
-              Authorization: `Bearer ${user.token}`,
-            },
-          };
-          const {data} = await axios.post("/api/chat" , {userId} , config)
-          if(!chat.find((c)=> c._id === data._id)) setChat([data,...chat])
-          setSelectedChat(data)
-          setLoadingChat(false)
-          onClose()
-      } catch (error) {
-        toast({
-            title: error,
-            status: "error",
-            duration: 5000,
-            isClosable: true,
-            position: "top-left",
-          });
-      }
-  }
+  const accessChat = async (userId) => {
+    try {
+      setLoadingChat(true);
+      const config = {
+        headers: {
+          "Content-type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+      };
+      const { data } = await axios.post("/api/chat", { userId }, config);
+      if (!chat.find((c) => c._id === data._id)) setChat([data, ...chat]);
+      setSelectedChat(data);
+      setLoadingChat(false);
+      onClose();
+    } catch (error) {
+      toast({
+        title: error,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "top-left",
+      });
+    }
+  };
   return (
     <>
       <Box
         display="flex"
         justifyContent="space-between"
         alignItems="center"
-        bg="white"
+        // bg="white"
         w="100%"
         p="5px 10px 5px 10px"
         borderWidth="5px"
@@ -116,20 +125,32 @@ function SideDrawer() {
         <Tooltip label="search user to chat" hasArrow placement="bottom-end">
           <Button variant="ghost" onClick={onOpen}>
             <i className="fas fa-search"></i>
-            <Text display={{ base: "none", md: "flex", px: "4" }}>Search user</Text>
+            <Text display={{ base: "none", md: "flex", px: "4" }}>
+              Search user
+            </Text>
           </Button>
         </Tooltip>
         <Text fontSize="2xl" fontFamily="Work sans">
           Chat APP
         </Text>
         <div>
+          <Button onClick={() => toggleColorMode()}>
+            {colorMode === "dark" ? (
+              <SunIcon color="orange.200" />
+            ) : (
+              <MoonIcon color="blue.700" />
+            )}
+          </Button>
           <Menu>
             <MenuButton p={1}>
-            <NotificationBadge count={notification.length} effect={Effect.SCALE}/>
+              <NotificationBadge
+                count={notification.length}
+                effect={Effect.SCALE}
+              />
               <BellIcon fontSize="2xl" m={1} />
             </MenuButton>
             <MenuList pl={2}>
-            {!notification.length && "No New Messages"}
+              {!notification.length && "No New Messages"}
               {notification.map((notif) => (
                 <MenuItem
                   key={notif._id}
@@ -150,13 +171,13 @@ function SideDrawer() {
               <Avatar
                 size="sm"
                 cursor="pointer"
-                name={user.name}
-                src={user.pic}
+                name={user?.name}
+                src={user?.pic}
               />
             </MenuButton>
             <MenuList>
               <ProfileModal user={user} childern={"My Profile"}>
-                <MenuItem>My Profile</MenuItem>{" "}
+                <MenuItem>My Profile</MenuItem>
               </ProfileModal>
               <MenuDivider />
               <MenuItem onClick={logoutHabdler}>Log out</MenuItem>
@@ -190,7 +211,7 @@ function SideDrawer() {
                 />
               ))
             )}
-            {loadingChat && <Spinner ml="auto" display="flex"/>}
+            {loadingChat && <Spinner ml="auto" display="flex" />}
           </DrawerBody>
 
           <DrawerFooter>

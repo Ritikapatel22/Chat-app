@@ -1,7 +1,6 @@
 import {
   Button,
   FormControl,
-  FormLabel,
   Input,
   Modal,
   ModalBody,
@@ -19,7 +18,7 @@ import { ChatState } from "../../Context/ChatProvider";
 import UserBadgeItem from "../UserAvtar/UserBadgeItem";
 import UserListItem from "../UserAvtar/UserListItem";
 
-function GroupChatModal({ children , loggedUser }) {
+function GroupChatModal({ children, loggedUser }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [groupChatName, setGroupChatName] = useState();
   const [selectedUsers, setSelectedUsers] = useState([]);
@@ -27,61 +26,64 @@ function GroupChatModal({ children , loggedUser }) {
   const [searchResult, setSearchResult] = useState([]);
   const [loading, setLoading] = useState(false);
 
-
   const toast = useToast();
 
   const { user, chat, setChat } = ChatState();
 
-  const UserData = selectedUsers.map((u)=>u._id)
-  UserData.push(user._id)
+  const UserData = selectedUsers.map((u) => u._id);
+  UserData.push(user._id);
 
-   const handleSubmit= async() =>{
-    if(!groupChatName || !selectedUsers){
-        toast({
-            title: "Pleasefill require field",
-            status: "warning",
-            duration: 5000,
-            isClosable: true,
-            position: "top-left",
-          });
+  const handleSubmit = async () => {
+    if (!groupChatName || !selectedUsers) {
+      toast({
+        title: "Pleasefill require field",
+        status: "warning",
+        duration: 5000,
+        isClosable: true,
+        position: "top-left",
+      });
     }
     try {
-        const config = {
-            headers: {
-              Authorization: `Bearer ${user.token}`,
-            },
-          };
-          const { data } = await axios.post(`/api/chat/group`,{
-              name : groupChatName,
-              users: UserData,
-              groupAdmin : user._id
-          }, config);
-          setChat([data,...chat])
-          onClose()
+      const config = {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      };
+      const { data } = await axios.post(
+        `/api/chat/group`,
+        {
+          name: groupChatName,
+          users: UserData,
+          groupAdmin: user._id,
+        },
+        config
+      );
+      setChat([data, ...chat]);
+      onClose();
     } catch (error) {
-        toast({
-            title: error,
-            status: "error",
-            duration: 5000,
-            isClosable: true,
-            position: "top-left",
-          });
+      toast({
+        title: error,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "top-left",
+      });
     }
-   }
+  };
 
-   const handleSearch = async(query) =>{ 
-    setSearch(query)
-    if(!query){
-        toast({
-            title: "Please Enter something to search",
-            status: "warning",
-            duration: 5000,
-            isClosable: true,
-            position: "top-left",
-          });
+  const handleSearch = async (query) => {
+    setSearch(query);
+    if (!query) {
+      toast({
+        title: "Please Enter something to search",
+        status: "warning",
+        duration: 5000,
+        isClosable: true,
+        position: "top-left",
+      });
     }
     try {
-    setLoading(true);
+      setLoading(true);
       const config = {
         headers: {
           Authorization: `Bearer ${user.token}`,
@@ -89,34 +91,34 @@ function GroupChatModal({ children , loggedUser }) {
       };
       const { data } = await axios.get(`/api/user?search=${search}`, config);
       setLoading(false);
-      setSearchResult(data)
+      setSearchResult(data);
     } catch (error) {
-        toast({
-            title: error,
-            status: "error",
-            duration: 5000,
-            isClosable: true,
-            position: "top-left",
-          });
+      toast({
+        title: error,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "top-left",
+      });
     }
-  }
+  };
 
-  const handleGroup = async(user)=>{
-    if(selectedUsers.includes(user)){
-        toast({
-            title: "User alraedy add",
-            status: "warning",
-            duration: 5000,
-            isClosable: true,
-            position: "top-left",
-          });
+  const handleGroup = async (user) => {
+    if (selectedUsers.includes(user)) {
+      toast({
+        title: "User alraedy add",
+        status: "warning",
+        duration: 5000,
+        isClosable: true,
+        position: "top-left",
+      });
     }
-    setSelectedUsers([...selectedUsers,user])
-  }
+    setSelectedUsers([...selectedUsers, user]);
+  };
 
   const handleDelete = (e) => {
-setSelectedUsers(selectedUsers.filter(sel => sel._id != e._id))
-  }
+    setSelectedUsers(selectedUsers.filter((sel) => sel._id !== e._id));
+  };
 
   return (
     <>
@@ -133,21 +135,29 @@ setSelectedUsers(selectedUsers.filter(sel => sel._id != e._id))
             Create Group
           </ModalHeader>
           <ModalCloseButton />
-          <ModalBody is="flex" flexDir="column" alignItems="center">
+          <ModalBody display="flex" flexDir="column" alignItems="center">
             <FormControl>
-              <Input placeholder="Group name" mb={3} onChange={(e)=>setGroupChatName(e.target.value)} />
+              <Input
+                placeholder="Group name"
+                mb={3}
+                onChange={(e) => setGroupChatName(e.target.value)}
+              />
             </FormControl>
             <FormControl>
-              <Input placeholder="add user" mb={1} onChange={(e)=>handleSearch(e.target.value)} />
+              <Input
+                placeholder="add user"
+                mb={1}
+                onChange={(e) => handleSearch(e.target.value)}
+              />
             </FormControl>
             {selectedUsers.map((u) => (
-                <UserBadgeItem
-                  key={u._id}
-                  user={u}
-                  handleFunction={() => handleDelete(u)}
-                />
-              ))}
-             {loading ? (
+              <UserBadgeItem
+                key={u._id}
+                user={u}
+                handleFunction={() => handleDelete(u)}
+              />
+            ))}
+            {loading ? (
               // <ChatLoading />
               <div>Loading...</div>
             ) : (

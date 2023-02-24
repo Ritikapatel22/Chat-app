@@ -1,5 +1,5 @@
 const User = require("../models/userModel");
-const generateToken = require("../config/generateTokeb")
+const generateToken = require("../config/generateTokeb");
 
 const register = async (req, res) => {
   const { email } = req.body;
@@ -7,11 +7,13 @@ const register = async (req, res) => {
     name: req.body.name,
     email: req.body.email,
     password: req.body.password,
-    pic: req?.file?.filename
-  }
+    pic: req?.file?.filename,
+  };
 
   if (!data) {
-    res.status(400).json({ status: "error", msg: "Please Enter all the Feilds" });
+    res
+      .status(400)
+      .json({ status: "error", msg: "Please Enter all the Feilds" });
   }
 
   const userExists = await User.findOne({ email });
@@ -21,6 +23,7 @@ const register = async (req, res) => {
   }
 
   const user = await User.create(data);
+  console.log("user: ", user);
 
   if (user) {
     res.status(201).json({
@@ -29,7 +32,7 @@ const register = async (req, res) => {
       email: user.email,
       isAdmin: user.isAdmin,
       pic: user.pic,
-      token : generateToken(user._id)
+      token: generateToken(user._id),
     });
   } else {
     res.status(400).json({ status: "error", msg: "User not found" });
@@ -37,34 +40,46 @@ const register = async (req, res) => {
 };
 
 const authUser = async (req, res) => {
-    const { email, password } = req.body;
-  
-    const user = await User.findOne({ email });
-  
-    if (user && (await user.matchPassword(password))) {
-      res.json({
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        isAdmin: user.isAdmin,
-        pic: user.pic,
-        token: generateToken(user._id),
-      });
-    } else {
-      res.status(400).json({ status: "error", msg: "Invalid Email or Password" });
-    }
-  };
+  const { email, password } = req.body;
 
-  const alluser = async(req,res) => {
+  const user = await User.findOne({ email });
 
-    const keyword = req.query.search ? {
-      $or : [
-        {name : { $regex:req.query.search , $options: "i"}},
-        {email : { $regex:req.query.search , $options: "i"}}
-      ]
-    } : {}
-    const user = await User.find(keyword).find({_id : {$ne : req.user._id}})
-    res.send(user)
+  if (user && (await user.matchPassword(password))) {
+    res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      isAdmin: user.isAdmin,
+      pic: user.pic,
+      token: generateToken(user._id),
+    });
+  } else {
+    res.status(400).json({ status: "error", msg: "Invalid Email or Password" });
   }
+};
 
-module.exports = { register , authUser ,alluser };
+const renameUser = async (req, res) => {
+  const id = req.params.id;
+  const movie = {
+    name: req.body.name,
+    email: req.body.email,
+    pic: req?.file?.filename,
+  };
+  const update = await User.findByIdAndUpdate(id, movie, { new: true });
+  return res.status(200).json({ msg: "Created", update });
+};
+
+const alluser = async (req, res) => {
+  const keyword = req.query.search
+    ? {
+        $or: [
+          { name: { $regex: req.query.search, $options: "i" } },
+          { email: { $regex: req.query.search, $options: "i" } },
+        ],
+      }
+    : {};
+  const user = await User.find(keyword).find({ _id: { $ne: req.user._id } });
+  res.send(user);
+};
+
+module.exports = { register, authUser, alluser, renameUser };

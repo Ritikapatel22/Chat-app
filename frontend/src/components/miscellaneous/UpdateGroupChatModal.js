@@ -22,7 +22,7 @@ import { ChatState } from "../../Context/ChatProvider";
 import UserBadgeItem from "../UserAvtar/UserBadgeItem";
 import UserListItem from "../UserAvtar/UserListItem";
 
-function UpdateGroupChatModal({ fetchAgain, setFetchAgain , FetchMessage }) {
+function UpdateGroupChatModal({ fetchAgain, setFetchAgain, FetchMessage }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [groupChatName, setGroupChatName] = useState();
   const [search, setSearch] = useState("");
@@ -33,50 +33,53 @@ function UpdateGroupChatModal({ fetchAgain, setFetchAgain , FetchMessage }) {
 
   const { selectedChat, setSelectedChat, user } = ChatState();
 
-  const handleRemove = async(user1) => {
-    if (selectedChat.groupAdmin?._id !== user?._id && user1?._id !== user?._id) {
-        toast({
-          title: "Only admins can remove someone!",
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-          position: "bottom",
-        });
-        return;
-      }
-  
-      try {
-        setLoading(true);
-        const config = {
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-          },
-        };
-        const { data } = await axios.put(
-          `/api/chat/groupremove`,
-          {
-            chatId: selectedChat._id,
-            userId: user1._id,
-          },
-          config
-        );
-  
-        user1._id === user._id ? setSelectedChat() : setSelectedChat(data);
-        setFetchAgain(!fetchAgain);
-        FetchMessage();
-        setLoading(false);
-      } catch (error) {
-        toast({
-          title: "Error Occured!",
-          description: error.response.data.message,
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-          position: "bottom",
-        });
-        setLoading(false);
-      }
-      setGroupChatName("");
+  const handleRemove = async (user1) => {
+    if (
+      selectedChat.groupAdmin?._id !== user?._id &&
+      user1?._id !== user?._id
+    ) {
+      toast({
+        title: "Only admins can remove someone!",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const config = {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      };
+      const { data } = await axios.put(
+        `/api/chat/groupremove`,
+        {
+          chatId: selectedChat._id,
+          userId: user1._id,
+        },
+        config
+      );
+
+      user1._id === user._id ? setSelectedChat() : setSelectedChat(data);
+      setFetchAgain(!fetchAgain);
+      FetchMessage();
+      setLoading(false);
+    } catch (error) {
+      toast({
+        title: "Error Occured!",
+        description: error.response.data.message,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+      setLoading(false);
+    }
+    setGroupChatName("");
   };
 
   const handleSearch = async (query) => {
@@ -108,96 +111,100 @@ function UpdateGroupChatModal({ fetchAgain, setFetchAgain , FetchMessage }) {
     }
   };
 
-  const handleRename = async() => {
-    if(!groupChatName){
-        toast({
-            title: "Please fill require field",
-            status: "warning",
-            duration: 5000,
-            isClosable: true,
-            position: "top-left",
-          });
+  const handleRename = async () => {
+    if (!groupChatName) {
+      toast({
+        title: "Please fill require field",
+        status: "warning",
+        duration: 5000,
+        isClosable: true,
+        position: "top-left",
+      });
     }
     try {
-        const config = {
-            headers: {
-              Authorization: `Bearer ${user.token}`,
-            },
-          };
-          const {data} = await axios.put('/api/chat/rename',{
-              chatId : selectedChat._id,
-              chatName : groupChatName
-          },config)
-          setSelectedChat(data)
-          setFetchAgain(!fetchAgain)
-          setRenameLoading(false)
+      const config = {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      };
+      const { data } = await axios.put(
+        "/api/chat/rename",
+        {
+          chatId: selectedChat._id,
+          chatName: groupChatName,
+        },
+        config
+      );
+      setSelectedChat(data);
+      setFetchAgain(!fetchAgain);
+      setRenameLoading(false);
     } catch (error) {
-        toast({
-            title: error,
-            status: "error",
-            duration: 5000,
-            isClosable: true,
-            position: "top-left",
-          });
+      toast({
+        title: error,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "top-left",
+      });
     }
-    setGroupChatName("")
-  }
+    setGroupChatName("");
+  };
 
-  const handleAddUser = async(user1) => {
+  const handleAddUser = async (user1) => {
     if (selectedChat.users.find((u) => u._id === user1._id)) {
-        toast({
-          title: "User Already in group!",
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-          position: "bottom",
-        });
-        return;
-      }
-  
-      if (selectedChat.groupAdmin?._id !== user?._id) {
-        toast({
-          title: "Only admins can add someone!",
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-          position: "bottom",
-        });
-        return;
-      }
-  
-      try {
-        setLoading(true);
-        const config = {
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-          },
-        };
-        const { data } = await axios.put(
-          `/api/chat/groupadd`,
-          {
-            chatId: selectedChat._id,
-            userId: user1._id,
-          },
-          config
-        );
-  
-        setSelectedChat(data);
-        setFetchAgain(!fetchAgain);
-        setLoading(false);
-      } catch (error) {
-        toast({
-          title: "Error Occured!",
-          description: error.response.data.message,
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-          position: "bottom",
-        });
-        setLoading(false);
-      }
-      setGroupChatName("");
-  }
+      toast({
+        title: "User Already in group!",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+      return;
+    }
+
+    if (selectedChat.groupAdmin?._id !== user?._id) {
+      toast({
+        title: "Only admins can add someone!",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const config = {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      };
+      const { data } = await axios.put(
+        `/api/chat/groupadd`,
+        {
+          chatId: selectedChat._id,
+          userId: user1._id,
+        },
+        config
+      );
+
+      setSelectedChat(data);
+      setFetchAgain(!fetchAgain);
+      setLoading(false);
+    } catch (error) {
+      toast({
+        title: "Error Occured!",
+        description: error.response.data.message,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+      setLoading(false);
+    }
+    setGroupChatName("");
+  };
 
   return (
     <>
@@ -253,19 +260,17 @@ function UpdateGroupChatModal({ fetchAgain, setFetchAgain , FetchMessage }) {
                 onChange={(e) => handleSearch(e.target.value)}
               />
             </FormControl>
-            {
-                loading ? (
-                    <Spinner size="lg" />
-                ) :(
-                    searchResult?.map((user)=>(
-                        <UserListItem 
-                        key={user._id}
-                        user={user}
-                        handleFunction={() => handleAddUser(user)}
-                        />
-                    ))
-                )
-            }
+            {loading ? (
+              <Spinner size="lg" />
+            ) : (
+              searchResult?.map((user) => (
+                <UserListItem
+                  key={user._id}
+                  user={user}
+                  handleFunction={() => handleAddUser(user)}
+                />
+              ))
+            )}
           </ModalBody>
 
           <ModalFooter>

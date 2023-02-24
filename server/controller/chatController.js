@@ -3,8 +3,8 @@ const User = require("../models/userModel");
 
 const accessChat = async (req, res) => {
   const { userId } = req.body;
-  
-if (!userId) {
+
+  if (!userId) {
     console.log("UserID param not send with request");
   }
   var isChat = await Chat.find({
@@ -65,7 +65,7 @@ const createGroupChat = async (req, res) => {
   if (!req.body.users || !req.body.name) {
     return res.status(400).send({ message: "Please Fill all the field" });
   }
-  var users =req.body.users;
+  var users = req.body.users;
   if (users.length < 2) {
     return res
       .status(400)
@@ -81,9 +81,9 @@ const createGroupChat = async (req, res) => {
     });
 
     const fullGroupChat = await Chat.findOne({ _id: groupChat._id })
-    .populate("users", "-password")
-    .populate("groupAdmin", "-password");
-    
+      .populate("users", "-password")
+      .populate("groupAdmin", "-password");
+
     res.status(200).json(fullGroupChat);
   } catch (error) {
     console.log("error: ", error);
@@ -110,7 +110,7 @@ const renameGroup = async (req, res) => {
   } else {
     res.json(updateChat);
   }
-}
+};
 
 const addToGroup = async (req, res) => {
   const { chatId, userId } = req.body;
@@ -122,7 +122,7 @@ const addToGroup = async (req, res) => {
     },
     { new: true }
   )
-  .populate("users", "-password")
+    .populate("users", "-password")
     .populate("groupAdmin", "-password");
   if (!added) {
     res.status(404);
@@ -132,7 +132,7 @@ const addToGroup = async (req, res) => {
   }
 };
 
-const removeFromGroup = async (req,res) => {
+const removeFromGroup = async (req, res) => {
   const { chatId, userId } = req.body;
 
   const removed = await Chat.findByIdAndUpdate(
@@ -142,7 +142,7 @@ const removeFromGroup = async (req,res) => {
     },
     { new: true }
   )
-  .populate("users", "-password")
+    .populate("users", "-password")
     .populate("groupAdmin", "-password");
   if (!removed) {
     res.status(404);
@@ -150,7 +150,7 @@ const removeFromGroup = async (req,res) => {
   } else {
     res.json(removed);
   }
-}
+};
 
 module.exports = {
   accessChat,
@@ -158,5 +158,5 @@ module.exports = {
   createGroupChat,
   renameGroup,
   addToGroup,
-  removeFromGroup
+  removeFromGroup,
 };

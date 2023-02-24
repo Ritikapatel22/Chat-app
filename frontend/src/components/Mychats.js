@@ -9,7 +9,6 @@ import { ChatState } from "../Context/ChatProvider";
 import ChatLoading from "./ChatLoading";
 import GroupChatModal from "./miscellaneous/GroupChatModal";
 
-
 const MyChats = ({ fetchAgain }) => {
   const [loggedUser, setLoggedUser] = useState();
 
@@ -51,7 +50,6 @@ const MyChats = ({ fetchAgain }) => {
       flexDir="column"
       alignItems="center"
       p={3}
-      bg="white"
       w={{ base: "100%", md: "31%" }}
       borderRadius="lg"
       borderWidth="1px"
@@ -81,7 +79,6 @@ const MyChats = ({ fetchAgain }) => {
         display="flex"
         flexDir="column"
         p={3}
-        bg="#F8F8F8"
         w="100%"
         h="100%"
         borderRadius="lg"

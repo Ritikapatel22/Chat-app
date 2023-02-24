@@ -18,7 +18,7 @@ function Signup() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [show, setShow] = useState(false);
-  const [pic,setPic] = useState("")
+  const [pic, setPic] = useState("");
 
   const submitHandler = async () => {
     if (!name || !email || !password || !confirmPassword) {
@@ -41,13 +41,14 @@ function Signup() {
     }
     try {
       const formData = new FormData();
-      formData.append("name", name)
-      formData.append("email", email)
-      formData.append("password", password)
-      formData.append("pic",pic)
+      formData.append("name", name);
+      formData.append("email", email);
+      formData.append("password", password);
+      formData.append("pic", pic);
+      console.log("formData: ", formData);
       const data = await axios.post("/api/user", formData);
       localStorage.setItem("userInfo", JSON.stringify(data));
-      return data
+      return data;
     } catch (error) {
       toast({
         title: "Errror",

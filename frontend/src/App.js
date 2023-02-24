@@ -6,8 +6,8 @@ import HomePage from "./Pages/HomePage";
 function App() {
   return (
     <div className="App">
-      <Route path="/" component={HomePage} exact/>
-      <Route path="/chats" component={Chat} />
+      <Route path="/" component={HomePage} exact />
+      <Route path="/chats" exact component={Chat} />
     </div>
   );
 }

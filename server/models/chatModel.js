@@ -28,5 +28,5 @@ const chartModal = mongoose.Schema(
   { timestamps: true }
 );
 
-const Chat  = mongoose.model("Chat" , chartModal)
-module.exports = Chat
+const Chat = mongoose.model("Chat", chartModal);
+module.exports = Chat;
